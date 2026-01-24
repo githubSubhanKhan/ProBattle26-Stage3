@@ -5,6 +5,7 @@ import { ServiceModal } from '../components/ui/ServiceModal';
 import { Service } from '../config/types';
 import { useNavigate } from "react-router-dom";
 import { getServices, searchNearbyServices, updateUserLocation } from '../services/servicesAPI';
+import SeekerMessage from '../components/ui/SeekerMessage'; // adjust path if needed
 
 export const SeekerDashboard: React.FC = () => {
   const [allServices, setAllServices] = useState<Service[]>([]);
@@ -175,7 +176,8 @@ export const SeekerDashboard: React.FC = () => {
             onClose={() => setSelectedService(null)}
             showBookButton={true}
           />
-        )}
+        )}\
+         <SeekerMessage userType="seeker" />
       </div>
     </div>
   );

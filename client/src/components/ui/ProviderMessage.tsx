@@ -41,6 +41,32 @@ const providerConversations: Conversation[] = [
       { id: 2, senderId: 0, senderName: "You", message: "Hi Sarah! Thanks for reaching out.", timestamp: "10:32 AM", isSent: true },
     ],
   },
+  {
+    id: 2,
+    userId: 102,
+    userName: "Michael Brown",
+    userType: "seeker",
+    lastMessage: "Hi! I'm interested in your web development service.",
+    timestamp: "2 min ago",
+    unreadCount: 3,
+    messages: [
+      { id: 1, senderId: 101, senderName: "Sarah Johnson", message: "Hello! I saw your web development service.", timestamp: "10:30 AM", isSent: false },
+      { id: 2, senderId: 0, senderName: "You", message: "Hi Sarah! Thanks for reaching out.", timestamp: "10:32 AM", isSent: true },
+    ],
+  },
+  {
+    id: 3,
+    userId: 102,
+    userName: "Michael Brown",
+    userType: "seeker",
+    lastMessage: "Hi! I'm interested in your web development service.",
+    timestamp: "2 min ago",
+    unreadCount: 3,
+    messages: [
+      { id: 1, senderId: 101, senderName: "Sarah Johnson", message: "Hello! I saw your web development service.", timestamp: "10:30 AM", isSent: false },
+      { id: 2, senderId: 0, senderName: "You", message: "Hi Sarah! Thanks for reaching out.", timestamp: "10:32 AM", isSent: true },
+    ],
+  },
   // add more provider conversations as needed
 ];
 

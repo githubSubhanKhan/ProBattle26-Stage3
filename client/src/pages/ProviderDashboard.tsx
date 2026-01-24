@@ -6,6 +6,8 @@ import { AddServiceModal } from "../components/ui/AddServiceModal";
 import { Service } from "../config/types";
 import { useNavigate } from "react-router-dom";
 import { getServices, searchNearbyServices, updateUserLocation } from "../services/servicesAPI";
+import ProviderMessage from "../components/ui/ProviderMessage"; // adjust path if needed
+
 
 export const ProviderDashboard: React.FC = () => {
   const [allServices, setAllServices] = useState<Service[]>([]);
@@ -199,6 +201,9 @@ export const ProviderDashboard: React.FC = () => {
             onAdd={handleAddNewService}
           />
         )}
+        {/* ✅ Chat Button for Provider */}
+        <ProviderMessage userType="provider" />
+
       </div>
     </div>
   );
