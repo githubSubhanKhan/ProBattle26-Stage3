@@ -44,11 +44,14 @@ const Login: React.FC = () => {
       localStorage.setItem('user', JSON.stringify(data.user));
 
       // ✅ Role-based redirect
-      if (data.user.role === "PROVIDER") {
-        navigate("/provider");
-      } else {
-        navigate('/seeker');
-      }
+      if (data.user.role === "ADMIN") {
+  navigate("/admin");
+} else if (data.user.role === "PROVIDER") {
+  navigate("/provider");
+} else {
+  navigate("/seeker");
+}
+
     } catch (err: any) {
       setError(err.message || 'An error occurred during login');
     } finally {

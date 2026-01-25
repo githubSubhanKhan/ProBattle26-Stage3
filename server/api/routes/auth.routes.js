@@ -52,6 +52,11 @@ router.post("/signup", async (req, res) => {
  * LOGIN
  * POST /api/auth/login
  */
+
+/**
+ * LOGIN
+ * POST /api/auth/login
+ */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -60,6 +65,34 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email and password required" });
     }
 
+    /* =======================
+       ✅ ADMIN LOGIN (FROM .env)
+       ======================= */
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      const token = jwt.sign(
+        { userId: "admin-001", role: process.env.ADMIN_ROLE },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      return res.json({
+        success: true,
+        token,
+        user: {
+          id: "admin-001",
+          full_name: "System Admin",
+          email,
+          role: process.env.ADMIN_ROLE
+        }
+      });
+    }
+
+    /* =======================
+       👤 NORMAL USER LOGIN
+       ======================= */
     const result = await pool.query(
       "SELECT * FROM users WHERE email = $1",
       [email]
@@ -99,6 +132,54 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Login failed" });
   }
 });
+
+// router.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       return res.status(400).json({ error: "Email and password required" });
+//     }
+
+//     const result = await pool.query(
+//       "SELECT * FROM users WHERE email = $1",
+//       [email]
+//     );
+
+//     if (result.rows.length === 0) {
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     const user = result.rows[0];
+
+//     const isMatch = await bcrypt.compare(password, user.password_hash);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     const token = jwt.sign(
+//       { userId: user.id, role: user.role },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "7d" }
+//     );
+
+//     res.json({
+//       success: true,
+//       token,
+//       user: {
+//         id: user.id,
+//         full_name: user.full_name,
+//         email: user.email,
+//         role: user.role,
+//         latitude: user.latitude,
+//         longitude: user.longitude
+//       }
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Login failed" });
+//   }
+// });
 
 /**
  * UPDATE USER LOCATION
