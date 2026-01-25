@@ -1,5 +1,6 @@
-const BASE_URL = "http://localhost:5000/api/services";
-const AUTH_URL = "http://localhost:5000/api/auth";
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = `${baseURL}/api/services`;
+const AUTH_URL = `${baseURL}/api/auth`;
 
 export interface AddServicePayload {
   title: string;

@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:5000/api/messages";
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = `${baseURL}/api/messages`;
 
 // services/messagesAPI.ts
 export const searchConversations = async (userId: string, q: string) => {

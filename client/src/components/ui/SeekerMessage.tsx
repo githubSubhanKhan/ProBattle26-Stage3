@@ -4,6 +4,8 @@ import { searchConversations } from "../../services/messagesAPI";
 import { socket } from "../../config/socket";
 import { useEffect } from "react";
 
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
 // Types
 interface ChatMessage {
   id: number;
@@ -266,7 +268,7 @@ const ChatWindow: React.FC<{ conversation: Conversation; userType: "provider" | 
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/messages/send", {
+      const res = await fetch(`${baseURL}/api/messages/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -328,7 +330,7 @@ const ChatWindow: React.FC<{ conversation: Conversation; userType: "provider" | 
       const user = JSON.parse(localStorage.getItem("user") || "{}");
 
       const res = await fetch(
-        `http://localhost:5000/api/messages/history/${user.id}/${conversation.userId}`
+        `${baseURL}/api/messages/history/${user.id}/${conversation.userId}`
       );
 
       const data = await res.json();

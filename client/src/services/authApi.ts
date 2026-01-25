@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:5000/api/auth";
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = `${baseURL}/api/auth`;
 
 type UserRole = "SEEKER" | "PROVIDER";
 
