@@ -87,13 +87,19 @@ SELECT
   u.id AS user_id,
   u.full_name AS user_name,
   u.role AS user_type,
-  m.content AS last_message,
-  m.created_at AS timestamp,
-  COUNT(
-    CASE 
-      WHEN m.is_read = false AND m.receiver_id = $1 
-      THEN 1 
-    END
+  MAX(m.content) FILTER (
+    WHERE m.created_at = (
+      SELECT MAX(created_at)
+      FROM messages
+      WHERE 
+        (sender_id = u.id AND receiver_id = $1)
+        OR
+        (sender_id = $1 AND receiver_id = u.id)
+    )
+  ) AS last_message,
+  MAX(m.created_at) AS timestamp,
+  COUNT(*) FILTER (
+    WHERE m.is_read = false AND m.receiver_id = $1
   ) AS unread_count
 FROM users u
 LEFT JOIN messages m
@@ -104,5 +110,5 @@ LEFT JOIN messages m
   )
 WHERE u.id != $1
   AND u.full_name ILIKE '%' || $2 || '%'
-GROUP BY u.id, u.full_name, u.role, m.content, m.created_at
-ORDER BY m.created_at DESC NULLS LAST;
+GROUP BY u.id, u.full_name, u.role
+ORDER BY timestamp DESC NULLS LAST;

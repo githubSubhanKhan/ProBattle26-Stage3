@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { X, Search, MessageCircle, Briefcase, Send, ArrowLeft } from "lucide-react";
 import { searchConversations } from "../../services/messagesAPI";
+import { socket } from "../../config/socket";
+import { useEffect } from "react";
 
 // Types
 interface ChatMessage {
@@ -265,19 +267,100 @@ const ChatWindow: React.FC<{ conversation: Conversation; userType: "provider" | 
   const [messages, setMessages] = useState<ChatMessage[]>(conversation.messages);
   const [newMessage, setNewMessage] = useState("");
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
-    const msg: ChatMessage = {
-      id: messages.length + 1,
-      senderId: 0,
-      senderName: "You",
-      message: newMessage,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isSent: true,
+  const handleSendMessage = async () => {
+  if (!newMessage.trim()) return;
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  if (!user.id) {
+    console.error("User not logged in");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/messages/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        senderId: user.id,
+        receiverId: conversation.userId,
+        content: newMessage
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to send message");
+    }
+
+    setNewMessage(""); // ✅ clear input ONLY
+  } catch (err) {
+    console.error("Send message error:", err);
+  }
+};
+
+  useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  if (!user.id) return;
+
+  if (!socket.connected) {
+    socket.connect();
+    socket.emit("join", user.id);
+  }
+}, []);
+
+  useEffect(() => {
+    socket.on("receive_message", (msg) => {
+      if (
+        msg.sender_id !== conversation.userId &&
+        msg.receiver_id !== conversation.userId
+      ) return;
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: msg.id,
+          senderId: msg.sender_id,
+          senderName: msg.sender_id === conversation.userId
+            ? conversation.userName
+            : "You",
+          message: msg.content,
+          timestamp: new Date(msg.created_at).toLocaleTimeString(),
+          isSent: msg.sender_id !== conversation.userId
+        }
+      ]);
+    });
+
+    return () => {
+      socket.off("receive_message");
     };
-    setMessages([...messages, msg]);
-    setNewMessage("");
+  }, [conversation]);
+
+  useEffect(() => {
+  const loadMessages = async () => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    const res = await fetch(
+      `http://localhost:5000/api/messages/history/${user.id}/${conversation.userId}`
+    );
+
+    const data = await res.json();
+
+    setMessages(
+      data.map((msg: any) => ({
+        id: msg.id,
+        senderId: msg.sender_id,
+        senderName:
+          msg.sender_id === conversation.userId
+            ? conversation.userName
+            : "You",
+        message: msg.content,
+        timestamp: new Date(msg.created_at).toLocaleTimeString(),
+        isSent: msg.sender_id !== conversation.userId
+      }))
+    );
   };
+
+  loadMessages();
+}, [conversation.userId]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); }
