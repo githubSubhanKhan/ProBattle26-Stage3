@@ -82,3 +82,27 @@ CREATE TABLE audit_logs (
 );
 
 CREATE INDEX idx_services_h3 ON services(location_h3);
+
+SELECT
+  u.id AS user_id,
+  u.full_name AS user_name,
+  u.role AS user_type,
+  m.content AS last_message,
+  m.created_at AS timestamp,
+  COUNT(
+    CASE 
+      WHEN m.is_read = false AND m.receiver_id = $1 
+      THEN 1 
+    END
+  ) AS unread_count
+FROM users u
+LEFT JOIN messages m
+  ON (
+    (m.sender_id = u.id AND m.receiver_id = $1)
+    OR
+    (m.sender_id = $1 AND m.receiver_id = u.id)
+  )
+WHERE u.id != $1
+  AND u.full_name ILIKE '%' || $2 || '%'
+GROUP BY u.id, u.full_name, u.role, m.content, m.created_at
+ORDER BY m.created_at DESC NULLS LAST;

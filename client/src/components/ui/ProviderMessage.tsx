@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, Search, MessageCircle, Briefcase, Send, ArrowLeft } from "lucide-react";
+import { searchConversations } from "../../services/messagesAPI";
 
 // Types
 interface ChatMessage {
@@ -133,10 +134,40 @@ const ConversationList: React.FC<{
 }> = ({ userType, conversations, onClose, onSelectConversation }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredConversations, setFilteredConversations] = useState(conversations);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = (term: string) => {
+  const handleSearch = async (term: string) => {
     setSearchTerm(term);
-    setFilteredConversations(conversations.filter(c => c.userName.toLowerCase().includes(term.toLowerCase())));
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (!user.id) {
+      console.error("User not logged in");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await searchConversations(user.id, term);
+
+      setFilteredConversations(
+        data.map((c: any) => ({
+          id: c.userId,
+          userId: c.userId,
+          userName: c.userName,
+          userType: c.userType.toLowerCase(),
+          lastMessage: c.lastMessage || "No messages yet",
+          timestamp: c.timestamp
+            ? new Date(c.timestamp).toLocaleTimeString()
+            : "",
+          unreadCount: Number(c.unreadCount),
+          messages: []
+        }))
+      );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -177,6 +208,12 @@ const ConversationList: React.FC<{
             />
           </div>
         </div>
+
+        {loading && (
+          <p className="text-center text-sm text-gray-500 py-4">
+            Searching conversations...
+          </p>
+        )}
 
         {/* List */}
         <div className="flex-1 overflow-y-auto">
