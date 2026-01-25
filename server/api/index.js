@@ -7,6 +7,7 @@ const { Server } = require("socket.io");
 const authRoutes = require("./routes/auth.routes");
 const serviceRoutes = require("./routes/service.routes");
 const messagesRoutes = require("./routes/message.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.get("/db-test", async (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/admin", adminRoutes);
 
 /* ---------- socket setup ---------- */
 const server = http.createServer(app);
