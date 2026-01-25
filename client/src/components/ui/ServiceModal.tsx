@@ -24,7 +24,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        
+
         {/* Header */}
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">{service.title}</h2>
@@ -41,7 +41,15 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
             <InfoItem icon={<DollarSign size={20} />} label="Price" value={`$${service.price}/hour`} />
             <InfoItem icon={<User size={20} />} label="Provider" value={service.provider} />
             <InfoItem icon={<MapPin size={20} />} label="Location" value={service.location} />
-            <InfoItem icon={<Calendar size={20} />} label="Availability" value={service.availability} />
+            <InfoItem
+              icon={<Calendar size={20} />}
+              label="Availability"
+              value={
+                service.availability_start && service.availability_end
+                  ? `${new Date(service.availability_start).toLocaleDateString()} - ${new Date(service.availability_end).toLocaleDateString()}`
+                  : 'Not specified'
+              }
+            />
           </div>
 
           <div className="flex items-center justify-between p-4 rounded-lg mb-6" style={{ backgroundColor: '#F8FFE5' }}>
