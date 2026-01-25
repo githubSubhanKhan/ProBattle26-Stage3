@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Search, MessageCircle, User, Briefcase, Send, ArrowLeft } from "lucide-react";
+import { X, Search, MessageCircle, Briefcase, Send, ArrowLeft } from "lucide-react";
 
 // Types
 interface ChatMessage {
@@ -187,7 +187,7 @@ const ConversationList: React.FC<{
 };
 
 // Conversation Item
-const ConversationItem: React.FC<{ conversation: Conversation; userType: "provider" | "seeker"; onClick: () => void }> = ({ conversation, userType, onClick }) => {
+const ConversationItem: React.FC<{ conversation: Conversation; userType: "provider" | "seeker"; onClick: () => void }> = ({ conversation, onClick }) => {
   return (
     <div className="p-4 sm:p-5 hover:bg-gray-50 cursor-pointer transition-all duration-200" onClick={onClick}>
       <div className="flex items-start gap-3 sm:gap-4">
@@ -212,7 +212,7 @@ const ConversationItem: React.FC<{ conversation: Conversation; userType: "provid
 };
 
 // Chat Window
-const ChatWindow: React.FC<{ conversation: Conversation; userType: "provider" | "seeker"; onBack: () => void; onClose: () => void }> = ({ conversation, userType, onBack, onClose }) => {
+const ChatWindow: React.FC<{ conversation: Conversation; userType: "provider" | "seeker"; onBack: () => void; onClose: () => void }> = ({ conversation, onBack, onClose }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(conversation.messages);
   const [newMessage, setNewMessage] = useState("");
 
