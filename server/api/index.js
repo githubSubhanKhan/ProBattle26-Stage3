@@ -60,6 +60,8 @@ io.on("connection", (socket) => {
 /* 🔥 make io accessible in routes */
 app.set("io", io);
 
+app.get("/", (req, res) => res.send("Backend is running!"));
+
 /* ---------- start server ---------- */
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
