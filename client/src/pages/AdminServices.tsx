@@ -19,12 +19,35 @@ export const AdminServices = () => {
     loadServices();
   }, []);
 
+  const [message, setMessage] = useState<{
+  type: "success" | "error";
+  text: string;
+} | null>(null);
+
+
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+  try {
     await deleteAdminService(id, token);
-    alert(`"${title}" has been deleted successfully!`);
+
+    setMessage({
+      type: "success",
+      text: `"${title}" has been deleted successfully.`,
+    });
+
     loadServices();
-  };
+
+    // auto-hide message after 3 seconds
+    setTimeout(() => setMessage(null), 3000);
+  } catch (error) {
+    setMessage({
+      type: "error",
+      text: "Failed to delete service. Please try again.",
+    });
+
+    setTimeout(() => setMessage(null), 3000);
+  }
+};
+
 
   const filteredServices = services.filter(
     (s) =>
@@ -53,6 +76,21 @@ export const AdminServices = () => {
           <span className="text-lg font-bold text-[#FFA500]">{services.length}</span>
         </div>
       </div>
+
+      {message && (
+  <div
+    className={`rounded-lg px-4 py-3 font-medium shadow-md transition-all
+      ${
+        message.type === "success"
+          ? "bg-green-50 text-green-700 border border-green-200"
+          : "bg-red-50 text-red-700 border border-red-200"
+      }
+    `}
+  >
+    {message.text}
+  </div>
+)}
+
 
       {/* Search Bar */}
       <div className="bg-white rounded-xl shadow-md p-4">
